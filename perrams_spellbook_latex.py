@@ -97,7 +97,71 @@ def parse_spells(in_stream):
 # LaTeX
 #
 
+def format_spells(spells, out_stream):
+    for spell in spells:
+        out_stream.write(r"\section*{")
+        out_stream.write(spell.title)
+        out_stream.write("}\n")
 
+        out_stream.write(r"\begin{description}")
+        out_stream.write("\n")
+        for k,v in spell.attributes.items():
+            out_stream.write(r"\item [{")
+            out_stream.write(k)
+            out_stream.write("}] ")
+            out_stream.write(v)
+            out_stream.write("\n")
+        out_stream.write(r"\end{description}")
+        out_stream.write("\n")
+
+        for description in spell.description:
+            if isinstance(description, list):
+                out_stream.write(r"\begin{table}[ht]")
+                out_stream.write("\n")
+                out_stream.write(r"\centering")
+                out_stream.write("\n")
+                out_stream.write(r"\label{t_sim}")
+                out_stream.write("\n")
+                out_stream.write(r"\begin{tabular}{")
+                out_stream.write("l" * len(description[0]))
+                out_stream.write("}\n")
+                out_stream.write(r"\toprule")
+                out_stream.write("\n")
+                initial = True
+                for header in description[0]:
+                    if not initial:
+                        out_stream.write(" & ")
+                    initial = False
+                    out_stream.write(r"\thead{")
+                    out_stream.write(header)
+                    out_stream.write("}")
+                out_stream.write(r" \\")
+                out_stream.write("\n")
+                out_stream.write(r"\midrule")
+                out_stream.write("\n")
+                for row in description[1:]:
+                    initial = True
+                    for datum in row:
+                        if not initial:
+                            out_stream.write(" & ")
+                        initial = False
+                        out_stream.write(datum)
+                    out_stream.write(r" \\")
+                    out_stream.write("\n")
+                out_stream.write(r"\bottomrule")
+                out_stream.write("\n")
+                out_stream.write(r"\end{tabular}")
+                out_stream.write("\n")
+                out_stream.write(r"\end{table}")
+                out_stream.write("\n")
+            else:
+                out_stream.write(description)
+                out_stream.write("\n")
+            out_stream.write("\n")
+
+        out_stream.write(r"\lyxrightaddress{Source: ")
+        out_stream.write(spell.source)
+        out_stream.write("}\n\n")
 
 #
 # Conversion
@@ -124,8 +188,8 @@ def spell_glob_filter(patterns, spells, case_insensitive=True):
 
 def html_to_latex(in_stream, out_stream, patterns):
     spells = parse_spells(in_stream)
-    # TODO
-    print(list(spell_glob_filter(patterns, spells)))
+    format_spells(spell_glob_filter(patterns, spells), out_stream)
+    #print(list(spell_glob_filter(patterns, spells)))
 
 def htmlfile_to_latexfile(in_file, out_file, patterns):
     with open(in_file, "r") as fin,  open(out_file, "w") as fout:
