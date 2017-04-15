@@ -47,7 +47,9 @@ def parse_spells(in_stream):
             key = None
             for text_node in spell_attribute_soup.p.children:
                 if text_node.name == "strong":
-                    assert key is None, "Two keys defined in sequence: {key} {text_node} ".format(**locals())
+                    # Workaround for non-compliant output from PSB, for
+                    # example, see Range attr of Abundant Ammunition.
+                    #assert key is None, "Two keys defined in sequence: {key} {text_node} {open_spell}".format(**locals())
                     key = text_node.get_text(strip=True)
                 elif str(text_node) in ("<br/>", " "):
                     pass
