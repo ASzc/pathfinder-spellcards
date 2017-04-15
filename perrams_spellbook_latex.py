@@ -82,7 +82,14 @@ def parse_spells(in_stream):
                     row.append(item_soup.get_text(strip=True))
         else:
             for text_node in spell_description_soup.p.children:
-                text = str(text_node).strip()
+                if isinstance(text_node, bs4.NavigableString):
+                    text = str(text_node).strip()
+                elif text_node.name == "br":
+                    pass
+                else:
+                    assert text_node.name == "span", "Unknown spell description html tag {text_node}".format(**locals())
+                    text = text_node.get_text(strip=True)
+
                 if text in ("<br/>", ""):
                     # The card pagination may have split a single paragraph between two cards
                     last_description_text_was_break = True
