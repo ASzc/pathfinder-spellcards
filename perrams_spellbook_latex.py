@@ -5,6 +5,7 @@ import argparse
 import collections
 import fnmatch
 import logging
+import re
 import sys
 
 import bs4
@@ -97,19 +98,38 @@ def parse_spells(in_stream):
 # LaTeX
 #
 
+# http://stackoverflow.com/a/25875504/1905196
+tex_escape_conv = {
+    '&': r'\&',
+    '%': r'\%',
+    '$': r'\$',
+    '#': r'\#',
+    '_': r'\_',
+    '{': r'\{',
+    '}': r'\}',
+    '~': r'\textasciitilde{}',
+    '^': r'\^{}',
+    '\\': r'\textbackslash{}',
+    '<': r'\textless',
+    '>': r'\textgreater',
+}
+tex_escape_regex = re.compile('|'.join(re.escape(key) for key in sorted(tex_escape_conv.keys(), key = lambda item: - len(item))))
+def tex_escape(text):
+    return tex_escape_regex.sub(lambda match: tex_escape_conv[match.group()], text)
+
 def format_spells(spells, out_stream):
     for spell in spells:
         out_stream.write(r"\section*{")
-        out_stream.write(spell.title)
+        out_stream.write(tex_escape(spell.title))
         out_stream.write("}\n")
 
         out_stream.write(r"\begin{description}")
         out_stream.write("\n")
         for k,v in spell.attributes.items():
             out_stream.write(r"\item [{")
-            out_stream.write(k.replace(" ", "~"))
+            out_stream.write(tex_escape(k).replace(" ", "~"))
             out_stream.write("}] ")
-            out_stream.write(v)
+            out_stream.write(tex_escape(v))
             out_stream.write("\n")
         out_stream.write(r"\end{description}")
         out_stream.write("\n")
@@ -121,7 +141,7 @@ def format_spells(spells, out_stream):
                 out_stream.write(r"\centering")
                 out_stream.write("\n")
                 out_stream.write(r"\caption{")
-                out_stream.write(spell.title)
+                out_stream.write(tex_escape(spell.title))
                 out_stream.write("}\n")
                 out_stream.write(r"\label{t_sim}")
                 out_stream.write("\n")
@@ -136,7 +156,7 @@ def format_spells(spells, out_stream):
                         out_stream.write(" & ")
                     initial = False
                     out_stream.write(r"\thead{")
-                    out_stream.write(header)
+                    out_stream.write(tex_escape(header))
                     out_stream.write("}")
                 out_stream.write(r" \\")
                 out_stream.write("\n")
@@ -148,7 +168,7 @@ def format_spells(spells, out_stream):
                         if not initial:
                             out_stream.write(" & ")
                         initial = False
-                        out_stream.write(datum)
+                        out_stream.write(tex_escape(datum))
                     out_stream.write(r" \\")
                     out_stream.write("\n")
                 out_stream.write(r"\bottomrule")
@@ -158,12 +178,12 @@ def format_spells(spells, out_stream):
                 out_stream.write(r"\end{table}")
                 out_stream.write("\n")
             else:
-                out_stream.write(description)
+                out_stream.write(tex_escape(description))
                 out_stream.write("\n")
             out_stream.write("\n")
 
         out_stream.write(r"\hfill Source: ")
-        out_stream.write(spell.source)
+        out_stream.write(tex_escape(spell.source))
         out_stream.write("\n\n")
 
 #
