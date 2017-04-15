@@ -85,7 +85,7 @@ def parse_spells(in_stream):
                 if isinstance(text_node, bs4.NavigableString):
                     text = str(text_node).strip()
                 elif text_node.name == "br":
-                    pass
+                    text = "<br/>"
                 else:
                     assert text_node.name == "span", "Unknown spell description html tag {text_node}".format(**locals())
                     text = text_node.get_text(strip=True)
