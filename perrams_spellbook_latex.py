@@ -14,7 +14,7 @@ logger = logging.getLogger("psl")
 # HTML and Data Model
 #
 
-Spell = collections.namedtuple("Spell", ["title", "attributes", "description"])
+Spell = collections.namedtuple("Spell", ["title", "attributes", "description", "source"])
 
 def parse_spells(in_stream):
     spells = []
@@ -23,6 +23,7 @@ def parse_spells(in_stream):
     open_spell = None
     spell_attributes = None
     description_parts = None
+    source_attribution = None
     last_description_text_was_break = None
     for div in filter(lambda x: "pageBreak" not in x["class"] , soup.body.find_all("div", recursive=False)):
         title_candidate = div.h1.get_text()
@@ -32,7 +33,7 @@ def parse_spells(in_stream):
         else:
             # Wrap up open spell, and open this new one
             if open_spell is not None:
-                spells.append(Spell(open_spell, spell_attributes, description_parts))
+                spells.append(Spell(open_spell, spell_attributes, description_parts, source_attribution))
             open_spell = title_candidate
             spell_attributes = collections.OrderedDict()
             description_parts = []
@@ -53,6 +54,13 @@ def parse_spells(in_stream):
                     key = None
                 else:
                     assert False, "Unknown attribute component: {text_node}".format(**locals())
+
+            # All new spell cards will have a source attribution
+            card_note_soup = div.find("div", {"class": "cardNote"})
+            assert card_note_soup is not None, "Newly opened spell contains no card note: {open_spell}".format(**locals())
+            source_attribution = str(card_note_soup.contents[0]).strip()
+            assert source_attribution.startswith("Source: "), "Newly opened spell contains no source attribution: {open_spell}".format(**locals())
+            source_attribution = source_attribution[8:]
 
         # All cards contain a description or a table
         spell_description_soup = div.find("div", {"class": "spellDescription"})
