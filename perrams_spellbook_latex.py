@@ -194,9 +194,29 @@ def html_to_latex(in_stream, out_stream, patterns):
     format_spells(spell_glob_filter(patterns, spells), out_stream)
     #print(list(spell_glob_filter(patterns, spells)))
 
-def htmlfile_to_latexfile(in_file, out_file, patterns):
-    with open(in_file, "r") as fin,  open(out_file, "w") as fout:
+class OpenOrNone(object):
+    def __init__(self, path):
+        self.path = path
+        self.f = None
+    def __enter__(self):
+        if self.path is not None:
+            self.f = open(self.path, "r")
+        return self.f
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        if self.f is not None:
+            self.f.close()
+
+def htmlfile_to_latexfile(in_file, out_file, template, patterns):
+    with OpenOrNone(template) as tin, open(in_file, "r") as fin,  open(out_file, "w") as fout:
+        if tin is not None:
+            for line in tin:
+                fout.write(line)
+                if line == "\\begin{document}\n":
+                    break
         html_to_latex(fin, fout, patterns)
+        if tin is not None:
+            for line in tin:
+                fout.write(line)
 
 #
 # Main
@@ -206,6 +226,7 @@ def create_argparser():
     parser = argparse.ArgumentParser(description="Convert HTML spellcards from Perram's Spellbook into LaTeX source")
 
     parser.add_argument("-d", "--debug", action="store_true", help="Enable debug logging")
+    parser.add_argument("-t", "--template", help="Fill in a copy of this LaTeX document with the generated syntax, sending the copy to the output specified by --output")
     parser.add_argument("-i", "--input", help="Read from a file instead of stdin", default="/dev/stdin")
     parser.add_argument("-o", "--output", help="Write into a file instead of stdout", default="/dev/stdout")
     parser.add_argument("-e", "--exclude", action="append", help="Exclude spells by applying one or more case-insensitive glob pattern to attribute values. Ex: -e 'School=*evil*' -e 'School=*lawful*'", default=[])
@@ -228,12 +249,13 @@ def main(args):
     args = parser.parse_args(args)
     setup_logging(args.debug)
 
+    # Parse exclusion pattern(s)
     patterns = []
     for exclude in args.exclude:
         attribute_name, pattern = exclude.split("=", 1)
         patterns.append((attribute_name, pattern))
 
-    htmlfile_to_latexfile(args.input, args.output, patterns)
+    htmlfile_to_latexfile(args.input, args.output, args.template, patterns)
     return 0
 
 if __name__ == "__main__":
