@@ -1,0 +1,136 @@
+%% LyX 2.2.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{article}
+\usepackage{fontspec}
+\setmainfont[Mapping=tex-text]{Akzidenz-Grotesk BQ Condensed}
+\usepackage[paperwidth=3in,paperheight=5in]{geometry}
+\geometry{verbose,tmargin=0.17in,bmargin=0.17in,lmargin=0.17in,rmargin=0.17in,headheight=0in,headsep=0in,footskip=0in}
+\pagestyle{empty}
+\setlength{\parskip}{\medskipamount}
+\setlength{\parindent}{0pt}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\newcommand{\lyxrightaddress}[1]{
+\par {\raggedleft \begin{tabular}{l}\ignorespaces
+#1
+\end{tabular}
+\vspace{1.4em}
+\par}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+% Fancy definition lists
+\usepackage{enumitem}
+\SetLabelAlign{parright}{\parbox[t]{\labelwidth}{\raggedleft#1}}
+\setlist{nolistsep,style=multiline,leftmargin=5em,align=parright}
+
+% Pagebreak for each section
+\usepackage[explicit]{titlesec}
+\newcommand{\sectionbreak}{\clearpage}
+
+% https://tex.stackexchange.com/questions/131299/re-displaying-section-headings-after-page-breaks-with-titlesec
+% \usepackage[explicit]{titlesec}
+\usepackage{everyshi}% http://ctan.org/pkg/everyshi
+\usepackage{etoolbox}% http://ctan.org/pkg/etoolbox
+\makeatletter
+
+\titleformat{name=\section}
+  {\normalfont\bfseries\Large}
+  {\thesection}
+  {1em}
+  {\gdef\@section@title@{\thesection\quad#1 (continued)}#1}
+
+\titleformat{name=\section,numberless}
+  {\normalfont\bfseries\Large}
+  {}
+  {0pt}
+  {\gdef\@section@title@{#1 (continued)}#1}
+
+\titlespacing{\section}
+  {0pt}
+  {3ex plus 2ex minus 1ex}
+  {1ex plus .5ex minus .5ex}
+
+\let\@section@title@\relax% Sectional heading storage
+\def\print@section@title@{%
+  {\noindent\normalfont\bfseries\Large\@section@title@}\par\vspace{1ex plus .5ex minus .5ex}%
+}
+\EveryShipout{%
+  \ifdim\pagetotal>\pagegoal% There is content overflow on this page
+    \aftergroup\print@section@title@% Reprint/-insert sectional heading
+  \fi%
+}
+\makeatother
+
+\makeatother
+
+\usepackage{xunicode}
+\usepackage{polyglossia}
+\setdefaultlanguage{english}
+\begin{document}
+
+\section*{Decoy Ring}
+\begin{description}
+\item [{Price}] 12,000 gp
+\item [{Aura}] moderate illusion
+\item [{CL}] 11th
+\item [{Weight}] —
+\end{description}
+This ring is a thick loop of mirrorlike metal. Whenever the wearer
+of this ring takes the withdraw action or becomes helpless (including
+falling unconscious), it instantly makes her invisible for 3 rounds
+and creates four illusory duplicates that either run off in opposite
+directions or perform other plausible actions that could draw enemy
+attention away from her. The duplicates last for 3 rounds before disappearing,
+but they instantly pop out of existence if struck by an attack (AC
+10) and can be disbelieved (Will DC 19). Allies of the wearer always
+know her true location and can freely provide aid or assistance to
+her.
+
+\lyxrightaddress{Source: Ultimate Equipment}
+
+\section*{Badger's Ferocity {[}3{]}}
+\begin{description}
+\item [{School}] transmutation
+\item [{Level}] cleric 3, druid 3, ranger 2, sorcerer/wizard 2
+\item [{Casting}] Time 1 standard action
+\item [{Components}] V, S
+\item [{Range}] close (25 ft. + 5 ft./2 levels)
+\item [{Targets}] one weapon/3 levels
+\item [{Duration}] concentration
+\item [{Saving}] Throw Will negates (harmless); SR yes (harmless)
+\end{description}
+This functions like keen edge, except it affects multiple weapons
+and requires your concentration. You select the weapons to be affected,
+and can only affect one weapon per creature. If a creature's weapon
+exceeds the spell's range, the spell ends for that weapon.
+
+\lyxrightaddress{Source: Ultimate Magic}
+
+\section*{Bestow Curse {[}3{]}}
+\begin{description}
+\item [{School}] necromancy{[}curse{]}
+\item [{Level}] cleric 3, sorcerer/wizard 4, witch 3, antipaladin 3
+\item [{Casting}] Time 1 standard action
+\item [{Components}] V, S
+\item [{Range}] touch
+\item [{Targets}] creature touched
+\item [{Duration}] permanent
+\item [{Saving}] Throw Will negates; SR yes
+\end{description}
+You place a curse on the subject. Choose one of the following.
+
+-6 decrease to an ability score (minimum 1). -4 penalty on attack
+rolls, saves, ability checks, and skill checks. Each turn, the target
+has a 50\% chance to act normally; otherwise, it takes no action.
+
+You may also invent your own curse, but it should be no more powerful
+than those described above.
+
+The curse bestowed by this spell cannot be dispelled, but it can be
+removed with a break enchantment, limited wish, miracle, remove curse,
+or wish spell.
+
+\lyxrightaddress{Source: PFRPG Core}
+\end{document}
