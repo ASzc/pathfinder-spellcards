@@ -46,7 +46,7 @@
   {\noindent\normalfont\bfseries\Large\@section@title@}\par\vspace{1ex plus .5ex minus .5ex}%
 }
 \EveryShipout{%
-  \ifdim\pagetotal>\pagegoal% There is content overflow on this page
+  \ifdim\pagetotal>\the\dimexpr \pagegoal + 1em\relax% There is content overflow on this page
     \aftergroup\print@section@title@% Reprint/-insert sectional heading
   \fi%
 }
