@@ -1,5 +1,3 @@
-%% LyX 2.2.2 created this file.  For more info, see http://www.lyx.org/.
-%% Do not edit unless you really know what you are doing.
 \documentclass[english]{article}
 \usepackage{fontspec}
 \setmainfont[Mapping=tex-text]{Akzidenz-Grotesk BQ Condensed}
@@ -10,24 +8,15 @@
 \setlength{\parindent}{0pt}
 
 \makeatletter
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
-\newcommand{\lyxrightaddress}[1]{
-\par {\raggedleft \begin{tabular}{l}\ignorespaces
-#1
-\end{tabular}
-\vspace{1.4em}
-\par}
-}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
 % Fancy definition lists
 \usepackage{enumitem}
 \SetLabelAlign{parright}{\parbox[t]{\labelwidth}{\raggedleft#1}}
 \setlist{nolistsep,style=multiline,leftmargin=5em,align=parright}
 
-% Pagebreak for each section
+% Pagebreak for each section, and reset the table counter for each section
 \usepackage[explicit]{titlesec}
-\newcommand{\sectionbreak}{\clearpage}
+\newcommand{\sectionbreak}{\setcounter{table}{0}\clearpage}
 
 % https://tex.stackexchange.com/questions/131299/re-displaying-section-headings-after-page-breaks-with-titlesec
 % \usepackage[explicit]{titlesec}
@@ -61,7 +50,6 @@
     \aftergroup\print@section@title@% Reprint/-insert sectional heading
   \fi%
 }
-\makeatother
 
 % Make bolded table headers available
 \usepackage{array, booktabs, caption}

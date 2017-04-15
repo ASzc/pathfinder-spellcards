@@ -107,7 +107,7 @@ def format_spells(spells, out_stream):
         out_stream.write("\n")
         for k,v in spell.attributes.items():
             out_stream.write(r"\item [{")
-            out_stream.write(k)
+            out_stream.write(k.replace(" ", "~"))
             out_stream.write("}] ")
             out_stream.write(v)
             out_stream.write("\n")
@@ -120,6 +120,9 @@ def format_spells(spells, out_stream):
                 out_stream.write("\n")
                 out_stream.write(r"\centering")
                 out_stream.write("\n")
+                out_stream.write(r"\caption{")
+                out_stream.write(spell.title)
+                out_stream.write("}\n")
                 out_stream.write(r"\label{t_sim}")
                 out_stream.write("\n")
                 out_stream.write(r"\begin{tabular}{")
@@ -159,9 +162,9 @@ def format_spells(spells, out_stream):
                 out_stream.write("\n")
             out_stream.write("\n")
 
-        out_stream.write(r"\lyxrightaddress{Source: ")
+        out_stream.write(r"\hfill Source: ")
         out_stream.write(spell.source)
-        out_stream.write("}\n\n")
+        out_stream.write("\n\n")
 
 #
 # Conversion
