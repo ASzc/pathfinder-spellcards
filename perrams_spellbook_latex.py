@@ -77,11 +77,31 @@ def parse_spells(in_stream):
             # structured and styled.
             table = []
             description_parts.append(table)
+            colspan = None
+            nonheader_colspan = False
             for row_soup in table_soup.find_all("tr", recursive=False):
                 row = []
                 table.append(row)
                 for item_soup in row_soup.children:
-                    row.append(item_soup.get_text(strip=True))
+                    if colspan is not None:
+                        # Add to original header
+                        assert item_soup.name == "th", "colspan hack doesn't work for {title_candidate} {item_soup}".format(**locals())
+                        colspan.append(item_soup.get_text(strip=True))
+                        nonheader_colspan = True
+                    elif item_soup.has_attr("colspan"):
+                        # Hack to handle the one type of complex table observed
+                        # so far, and still represent it (mostly) in the basic
+                        # table data model.
+                        if nonheader_colspan:
+                            # Hack for note cells, just append as regular text
+                            description_parts.append(item_soup.get_text(strip=True))
+                        else:
+                            colspan = row
+                            break
+                    else:
+                        row.append(item_soup.get_text(strip=True))
+                else:
+                    colspan = None
         else:
             for text_node in spell_description_soup.p.children:
                 if isinstance(text_node, bs4.NavigableString):
@@ -145,7 +165,10 @@ def format_spells(spells, out_stream):
 
         for description in spell.description:
             if isinstance(description, list):
-                out_stream.write(r"\begin{table}[ht]")
+                if len(description[0]) > 4:
+                    out_stream.write(r"\begin{sidewaystable}[hp]")
+                else:
+                    out_stream.write(r"\begin{table}[H]")
                 out_stream.write("\n")
                 out_stream.write(r"\centering")
                 out_stream.write("\n")
@@ -154,8 +177,8 @@ def format_spells(spells, out_stream):
                 out_stream.write("}\n")
                 out_stream.write(r"\label{t_sim}")
                 out_stream.write("\n")
-                out_stream.write(r"\begin{tabular}{")
-                out_stream.write("l" * len(description[0]))
+                out_stream.write(r"\begin{tabulary}{\textwidth}{")
+                out_stream.write("L" * len(description[0]))
                 out_stream.write("}\n")
                 out_stream.write(r"\toprule")
                 out_stream.write("\n")
@@ -182,9 +205,12 @@ def format_spells(spells, out_stream):
                     out_stream.write("\n")
                 out_stream.write(r"\bottomrule")
                 out_stream.write("\n")
-                out_stream.write(r"\end{tabular}")
+                out_stream.write(r"\end{tabulary}")
                 out_stream.write("\n")
-                out_stream.write(r"\end{table}")
+                if len(description[0]) > 4:
+                    out_stream.write(r"\end{sidewaystable}")
+                else:
+                    out_stream.write(r"\end{table}")
                 out_stream.write("\n")
             else:
                 out_stream.write(tex_escape(description))
